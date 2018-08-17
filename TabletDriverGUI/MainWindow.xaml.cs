@@ -24,7 +24,7 @@ namespace TabletDriverGUI
     {
 
         // Version
-        public string Version = "0.1.5";
+        public string Version = "0.1.5_p1";
 
         // Console stuff
         private List<string> commandHistory;
@@ -136,14 +136,14 @@ namespace TabletDriverGUI
             // Restart timer
             timerRestart = new DispatcherTimer
             {
-                Interval = new TimeSpan(0, 0, 5)
+                Interval = new TimeSpan(0, 0, 1)
             };
             timerRestart.Tick += TimerRestart_Tick;
 
             // Statusbar timer
             timerStatusbar = new DispatcherTimer
             {
-                Interval = new TimeSpan(0, 0, 5)
+                Interval = new TimeSpan(0, 0, 1)
             };
             timerStatusbar.Tick += TimerStatusbar_Tick;
 
@@ -179,15 +179,17 @@ namespace TabletDriverGUI
             comboBoxButton3.SelectedIndex = 0;
 
 
-            //
-            // Smoothing rate ComboBox
-            //
-            comboBoxSmoothingRate.Items.Clear();
-            for (int i = 2; i <= 8; i++)
-            {
-                comboBoxSmoothingRate.Items.Add((1000.0 / i).ToString("0") + " Hz");
-            }
-            comboBoxSmoothingRate.SelectedIndex = 2;
+            ////
+            //// Smoothing rate ComboBox
+            ////
+            //comboBoxSmoothingRate.Items.Clear();
+            //for (int i = 2; i <= 8; i++)
+            //{
+            //    comboBoxSmoothingRate.Items.Add((1000.0 / i).ToString("0") + " Hz");
+            //}
+            //comboBoxSmoothingRate.SelectedIndex = 2;
+
+            // Predict box
 
             // Process command line arguments
             ProcessCommandLineArguments();
@@ -474,22 +476,26 @@ namespace TabletDriverGUI
             checkBoxDisableButtons.IsChecked = config.DisableButtons;
 
 
-            //
-            // Smoothing filter
-            //
-            checkBoxSmoothing.IsChecked = config.SmoothingEnabled;
-            textSmoothingLatency.Text = Utils.GetNumberString(config.SmoothingLatency);
-            comboBoxSmoothingRate.SelectedIndex = config.SmoothingInterval - 2;
-            if (config.SmoothingEnabled)
-            {
-                textSmoothingLatency.IsEnabled = true;
-                comboBoxSmoothingRate.IsEnabled = true;
-            }
-            else
-            {
-                textSmoothingLatency.IsEnabled = false;
-                comboBoxSmoothingRate.IsEnabled = false;
-            }
+            ////
+            //// Smoothing filter
+            ////
+            //checkBoxSmoothing.IsChecked = config.SmoothingEnabled;
+            //textSmoothingLatency.Text = Utils.GetNumberString(config.SmoothingLatency);
+            //comboBoxSmoothingRate.SelectedIndex = config.SmoothingInterval - 2;
+            //if (config.SmoothingEnabled)
+            //{
+            //    textSmoothingLatency.IsEnabled = true;
+            //    comboBoxSmoothingRate.IsEnabled = true;
+            //}
+            //else
+            //{
+            //    textSmoothingLatency.IsEnabled = false;
+            //    comboBoxSmoothingRate.IsEnabled = false;
+            //}
+
+            checkBoxPredict.IsChecked = config.PredictEnabled;
+            textPredictLength.Text = Utils.GetNumberString(config.PredictLength);
+            comboBoxAlgorithm.SelectedIndex = (int)config.PredictAlgorithm;
 
             //
             // Run at startup
@@ -620,22 +626,26 @@ namespace TabletDriverGUI
 
 
 
-            // Filter
-            config.SmoothingEnabled = (bool)checkBoxSmoothing.IsChecked;
-            config.SmoothingInterval = comboBoxSmoothingRate.SelectedIndex + 2;
-            if (Utils.ParseNumber(textSmoothingLatency.Text, out val))
-                config.SmoothingLatency = val;
+            //// Filter
+            //config.SmoothingEnabled = (bool)checkBoxSmoothing.IsChecked;
+            //config.SmoothingInterval = comboBoxSmoothingRate.SelectedIndex + 2;
+            //if (Utils.ParseNumber(textSmoothingLatency.Text, out val))
+            //    config.SmoothingLatency = val;
 
-            if (config.SmoothingEnabled)
-            {
-                textSmoothingLatency.IsEnabled = true;
-                comboBoxSmoothingRate.IsEnabled = true;
-            }
-            else
-            {
-                textSmoothingLatency.IsEnabled = false;
-                comboBoxSmoothingRate.IsEnabled = false;
-            }
+            //if (config.SmoothingEnabled)
+            //{
+            //    textSmoothingLatency.IsEnabled = true;
+            //    comboBoxSmoothingRate.IsEnabled = true;
+            //}
+            //else
+            //{
+            //    textSmoothingLatency.IsEnabled = false;
+            //    comboBoxSmoothingRate.IsEnabled = false;
+            //}
+
+            config.PredictEnabled = (bool)checkBoxPredict.IsChecked;
+            config.PredictLength = int.Parse(textPredictLength.Text);
+            config.PredictAlgorithm = (Configuration.PredictAlgorithms)comboBoxAlgorithm.SelectedIndex;
 
             //
             // Run at startup
@@ -1680,14 +1690,21 @@ namespace TabletDriverGUI
             }
 
             // Smoothing filter
-            if (config.SmoothingEnabled)
+            //if (config.SmoothingEnabled)
+            //{
+            //    driver.SendCommand("Smoothing " + Utils.GetNumberString(config.SmoothingLatency));
+            //    driver.SendCommand("SmoothingInterval " + Utils.GetNumberString(config.SmoothingInterval));
+            //}
+            //else
+            //{
+            //    driver.SendCommand("Smoothing 0");
+            //}
+
+            // Prediction Filter
+            if (config.PredictEnabled)
             {
-                driver.SendCommand("Smoothing " + Utils.GetNumberString(config.SmoothingLatency));
-                driver.SendCommand("SmoothingInterval " + Utils.GetNumberString(config.SmoothingInterval));
-            }
-            else
-            {
-                driver.SendCommand("Smoothing 0");
+                driver.SendCommand("Predict " + config.PredictAlgorithm);
+                driver.SendCommand("PredictLength " + Utils.GetNumberString(config.PredictLength));
             }
 
             // Commands after settings

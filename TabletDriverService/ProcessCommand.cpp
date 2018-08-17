@@ -477,6 +477,7 @@ bool ProcessCommand(CommandLine *cmd) {
 	//
 	// Smoothing filter
 	//
+#if 0
 	else if(cmd->is("Smoothing")) {
 		if(!CheckTablet()) return true;
 		double latency = cmd->GetDouble(0, tablet->smoothing.GetLatency());
@@ -512,7 +513,9 @@ bool ProcessCommand(CommandLine *cmd) {
 			LOG_INFO("Smoothing = off\n");
 		}
 	}
+#endif
 
+#if 0
 	//
 	// Smoothing filter interval
 	//
@@ -537,7 +540,42 @@ bool ProcessCommand(CommandLine *cmd) {
 		LOG_INFO("Smoothing Interval = %d (%0.2f Hz, %0.2f ms, %f)\n", interval, 1000.0 / interval, tablet->smoothing.latency, tablet->smoothing.weight);
 
 	}
+#endif
 
+	// Predict filter
+	else if (cmd->is("Predict")) {
+		string stringValue = cmd->GetStringLower(0, "");
+
+		// Off / False
+		if(stringValue == "off" || stringValue == "false") {
+			tablet->predict.isEnabled = false;
+			LOG_INFO("Prediction = off\n");
+
+		}
+		else {
+
+			// TODO algorithm
+
+			// Enable filter
+			if (stringValue == "linear") {
+				tablet->predict.isEnabled = true;
+				tablet->predict.SetAlgorithm(PredictAlgorithm::LINEAR);
+				LOG_INFO("Prediction = Linear\n");
+			}
+		}
+	}
+
+	// Predict length
+	else if (cmd->is("PredictLength")) {
+
+		int length = cmd->GetInt(0, tablet->predict.predictLength);
+		if (length != tablet->predict.predictLength)
+			tablet->predict.predictLength = length;
+			if(tablet->raw.StopTimer()) {
+				tablet->raw.StartTimer();
+			}
+		LOG_INFO("Predict Length: %dms\n", length);
+	}
 
 	//
 	// Noise reduction filter

@@ -23,7 +23,7 @@
     <ProjectGuid>{3101CEC2-8F39-45FD-943B-79A488AD05EA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TabletDriverService</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -168,6 +168,7 @@ xcopy /C /Y "$(ProjectDir)config\init.cfg" "$(SolutionDir)TabletDriverGUI\bin\De
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ChronoRingBuffer.h" />
     <ClInclude Include="CommandLine.h" />
     <ClInclude Include="HIDDevice.h" />
     <ClInclude Include="Logger.h" />
@@ -180,6 +181,8 @@ xcopy /C /Y "$(ProjectDir)config\init.cfg" "$(SolutionDir)TabletDriverGUI\bin\De
     <ClInclude Include="TabletFilter.h" />
     <ClInclude Include="TabletFilterNoiseReduction.h" />
     <ClInclude Include="TabletFilterPeak.h" />
+    <ClInclude Include="TabletFilterRaw.h" />
+    <ClInclude Include="TabletFilterPredict.h" />
     <ClInclude Include="TabletFilterSmoothing.h" />
     <ClInclude Include="TabletSettings.h" />
     <ClInclude Include="targetver.h" />
@@ -188,6 +191,7 @@ xcopy /C /Y "$(ProjectDir)config\init.cfg" "$(SolutionDir)TabletDriverGUI\bin\De
     <ClInclude Include="VMulti.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChronoRingBuffer.cpp" />
     <ClCompile Include="CommandLine.cpp" />
     <ClCompile Include="HIDDevice.cpp" />
     <ClCompile Include="Logger.cpp" />
@@ -199,6 +203,8 @@ xcopy /C /Y "$(ProjectDir)config\init.cfg" "$(SolutionDir)TabletDriverGUI\bin\De
     <ClCompile Include="TabletFilter.cpp" />
     <ClCompile Include="TabletFilterNoiseReduction.cpp" />
     <ClCompile Include="TabletFilterPeak.cpp" />
+    <ClCompile Include="TabletFilterRaw.cpp" />
+    <ClCompile Include="TabletFilterPredict.cpp" />
     <ClCompile Include="TabletFilterSmoothing.cpp" />
     <ClCompile Include="TabletSettings.cpp" />
     <ClCompile Include="USBDevice.cpp" />

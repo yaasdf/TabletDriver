@@ -31,6 +31,14 @@ namespace TabletDriverGUI
         public int SmoothingInterval;
         public bool SmoothingEnabled;
 
+        public int PredictLength;
+        public bool PredictEnabled;
+        public PredictAlgorithms PredictAlgorithm;
+        public enum PredictAlgorithms
+        {
+            Linear = 0
+        }
+
         public Area DesktopSize;
         public bool AutomaticDesktopSize;
 
@@ -82,6 +90,10 @@ namespace TabletDriverGUI
             SmoothingEnabled = false;
             SmoothingLatency = 0;
             SmoothingInterval = 4;
+
+            PredictEnabled = false;
+            PredictLength = 0;
+            PredictAlgorithm = PredictAlgorithms.Linear;
 
             CommandsAfter = new string[] { "" };
             CommandsBefore = new string[] { "" };

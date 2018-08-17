@@ -8,6 +8,8 @@
 #include "TabletFilterSmoothing.h"
 #include "TabletFilterNoiseReduction.h"
 #include "TabletFilterPeak.h"
+#include "TabletFilterRaw.h"
+#include "TabletFilterPredict.h"
 #include "TabletBenchmark.h"
 #include "Vector2D.h"
 
@@ -69,6 +71,12 @@ public:
 
 	// Peak filter
 	TabletFilterPeak peak;
+
+	// Raw filter
+	TabletFilterRaw raw;
+
+	// Predict filter
+	TabletFilterPredict predict;
 
 	// Timed filter
 	TabletFilter *filterTimed[10];

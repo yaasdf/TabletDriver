@@ -56,7 +56,7 @@ void RunTabletThread() {
 	// Main Loop
 	//
 
-	while(true) {
+	while (true) {
 
 		//
 		// Read tablet position
@@ -64,23 +64,27 @@ void RunTabletThread() {
 		status = tablet->ReadPosition();
 
 		// Position OK
-		if(status == Tablet::PacketValid) {
+		if (status == Tablet::PacketValid) {
 			isResent = false;
 
-		// Invalid packet id
-		} else if(status == Tablet::PacketInvalid) {
+			// Invalid packet id
+		}
+		else if (status == Tablet::PacketInvalid) {
 			continue;
 
-		// Valid packet but position is not in-range or invalid
-		} else if(status == Tablet::PacketPositionInvalid) {
-			if(!isResent && tablet->state.isValid) {
+			// Valid packet but position is not in-range or invalid
+		}
+		else if (status == Tablet::PacketPositionInvalid) {
+			if (!isResent && tablet->state.isValid) {
 				isResent = true;
 				tablet->state.isValid = false;
-			} else {
+			}
+			else {
 				continue;
 			}
 			// Reading failed
-		} else {
+		}
+		else {
 			LOG_ERROR("Tablet Read Error!\n");
 			CleanupAndExit(1);
 		}
@@ -88,13 +92,13 @@ void RunTabletThread() {
 		//
 		// Don't send the first report
 		//
-		if(isFirstReport) {
+		if (isFirstReport) {
 			isFirstReport = false;
 			continue;
 		}
 
 		// Debug messages
-		if(tablet->debugEnabled) {
+		if (tablet->debugEnabled) {
 			timeNow = chrono::high_resolution_clock::now();
 			double delta = (timeNow - timeBegin).count() / 1000000.0;
 			LOG_DEBUG("STATE: %0.3f, %d, %0.3f, %0.3f, %0.3f\n",
@@ -108,7 +112,7 @@ void RunTabletThread() {
 
 
 		// Set output values
-		if(status == Tablet::PacketPositionInvalid) {
+		if (status == Tablet::PacketPositionInvalid) {
 			tablet->state.buttons = 0;
 		}
 
@@ -116,16 +120,16 @@ void RunTabletThread() {
 		// Packet filters
 		//
 		// Is there any filters?
-		if(tablet->filterPacketCount > 0) {
+		if (tablet->filterPacketCount > 0) {
 
 			// Loop through filters
-			for(int filterIndex = 0; filterIndex < tablet->filterPacketCount; filterIndex++) {
+			for (int filterIndex = 0; filterIndex < tablet->filterPacketCount; filterIndex++) {
 
 				// Filter
 				filter = tablet->filterPacket[filterIndex];
 
 				// Enabled?
-				if(filter != NULL && filter->isEnabled) {
+				if (filter != NULL && filter->isEnabled) {
 
 					// Process
 					filter->SetTarget(tablet->state.position);
@@ -139,17 +143,17 @@ void RunTabletThread() {
 
 		// Timed filter enabled?
 		filterTimedEnabled = false;
-		for(int filterIndex = 0; filterIndex < tablet->filterTimedCount; filterIndex++) {
-			if(tablet->filterTimed[filterIndex]->isEnabled)
+		for (int filterIndex = 0; filterIndex < tablet->filterTimedCount; filterIndex++) {
+			if (tablet->filterTimed[filterIndex]->isEnabled)
 				filterTimedEnabled = true;
 		}
 
 
 		// Do not write report when timed filter is enabled
-		if(tablet->filterTimedCount == 0 || !filterTimedEnabled) {
+		if (tablet->filterTimedCount == 0 || !filterTimedEnabled) {
 
 			// Relative mode
-			if(vmulti->mode == VMulti::ModeRelativeMouse) {
+			if (vmulti->mode == VMulti::ModeRelativeMouse) {
 
 				x = tablet->state.position.x;
 				y = tablet->state.position.y;
@@ -165,8 +169,9 @@ void RunTabletThread() {
 
 
 
-			// Absolute / Digitizer mode
-			} else {
+				// Absolute / Digitizer mode
+			}
+			else {
 				// Get x & y from the tablet state
 				x = tablet->state.position.x;
 				y = tablet->state.position.y;

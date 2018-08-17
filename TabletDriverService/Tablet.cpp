@@ -54,11 +54,13 @@ Tablet::Tablet() {
 	memset(&state, 0, sizeof(state));
 
 	// Filters
-	filterTimed[0] = &smoothing;
-	filterTimedCount = 1;
-	filterPacket[0] = &noise;
+	//filterTimed[0] = &smoothing;
+	filterTimed[0] = &raw;
+	filterTimedCount = 0;
 	//filterPacket[1] = &peak;
-	filterPacketCount = 1;
+	filterPacket[0] = &predict;
+	filterPacket[1] = &noise;
+	filterPacketCount = 2;
 
 	peak.isEnabled = true;
 
