@@ -14,5 +14,5 @@ Instead, run TabletDriverGUI from this version.
 
 # Algorithms
 
-- Linear (2 points)
-- Hexagonal (3 points)
+- Linear (2 points) (WIP)
+- Hexagonal (3 points) (NOT YET)
