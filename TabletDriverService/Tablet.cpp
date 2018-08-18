@@ -55,11 +55,11 @@ Tablet::Tablet() {
 
 	// Filters
 	//filterTimed[0] = &smoothing;
-	filterTimed[0] = &raw;
-	filterTimedCount = 0;
+	filterTimed[0] = &predict;
+	filterTimedCount = 1;
 	//filterPacket[1] = &peak;
-	filterPacket[0] = &predict;
-	filterPacket[1] = &noise;
+	filterPacket[0] = &noise;
+	filterPacket[1] = &predict;
 	filterPacketCount = 2;
 
 	peak.isEnabled = true;

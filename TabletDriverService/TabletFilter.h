@@ -18,5 +18,12 @@ public:
 	bool StartTimer();
 	bool StopTimer();
 
+public:
+	virtual void SetTargetPacket(Vector2D vector);
+	virtual void SetTargetTimer(Vector2D vector);
+	virtual void UpdatePacket();
+	virtual void UpdateTimer();
+	virtual void GetPositionPacket(Vector2D *vector);
+	virtual void GetPositionTimer(Vector2D *vector);
 };
 

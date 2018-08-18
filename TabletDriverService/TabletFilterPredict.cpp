@@ -9,6 +9,7 @@
 //
 TabletFilterPredict::TabletFilterPredict() {
 	SetAlgorithm(LINEAR);
+	timerInterval = 1;
 	predictLength = 0;
 	buffer.SetLength(10);
 	timeBuffer.SetLength(10);
@@ -38,10 +39,16 @@ void TabletFilterPredict::SetTarget(Vector2D targetVector) {
 	buffer.Add(targetVector);
 	timeBuffer.Add(high_resolution_clock::now());
 }
+void TabletFilterPredict::SetTargetTimer(Vector2D targetVector) {
+	// do nothing
+}
 // Set position
 void TabletFilterPredict::SetPosition(Vector2D vector) {
 	position.x = vector.x;
 	position.y = vector.y;
+}
+void TabletFilterPredict::GetPositionPacket(Vector2D* vector) {
+	// do nothing
 }
 // Get position
 bool TabletFilterPredict::GetPosition(Vector2D *outputVector) {
@@ -60,6 +67,9 @@ void TabletFilterPredict::Update() {
 		break;
 	}
 }
+void TabletFilterPredict::UpdatePacket() {
+	// Do nothing
+}
 
 
 void TabletFilterPredict::UpdateRaw() {
@@ -68,22 +78,41 @@ void TabletFilterPredict::UpdateRaw() {
 }
 
 void TabletFilterPredict::UpdateLinear() {
+	// let there be 3 sample points.
+	// p1 is the point before latest, p2 is the latest point, and the predicting point.
+	// These points have timestamps called t1, t2 and t3.
+	// We are calculating p3's axis with the vertical between p1 and p2.
+
 	timep t3 = high_resolution_clock::now();
 
 	// One position in the buffer?
 	if(buffer.count == 1) {
-		position.x = buffer[0]->x;
-		position.y = buffer[0]->y;
+		position.Set(*buffer[0]);
 		return;
 	}
 	Vector2D p1, p2;
 	timep t1, t2;
-	if (buffer.GetLatest(&p1, 0) && buffer.GetLatest(&p2, -1)) {
-		timeBuffer.GetLatest(&t1, 0);
-		timeBuffer.GetLatest(&t2, -1);
-		int t = duration_cast<milliseconds>(t2 - t1).count();
-		int tl = duration_cast<milliseconds>(t3 - t1).count() + predictLength;
-		position.x = p1.x + (p2.x - p1.x) / t * tl;
-		position.y = p1.y + (p2.y - p1.y) / t * tl;
+	if (buffer.GetLatest(&p1, -1) && buffer.GetLatest(&p2, 0)) {
+		timeBuffer.GetLatest(&t1, -1);
+		timeBuffer.GetLatest(&t2, 0);
+		int tSample = duration_cast<milliseconds>(t2 - t1).count();
+		int tTotal = duration_cast<milliseconds>(t3 - t1).count() + predictLength;
+		Vector2D p;
+		p.x = p1.x + (p2.x - p1.x) / tSample * tTotal;
+		p.y = p1.y + (p2.y - p1.y) / tSample * tTotal;
+		
+		// Skip prediction if dist is too high or low.
+		//double distance2_3 = p.Distance(p1);
+		double distance2_3 = (p.x - p1.x) * (p.x - p1.x) + (p.y - p1.y) * (p.y - p1.y);
+		if (distance2_3 > 10 * 10 || distance2_3 < 0.05 * 0.05) {
+			buffer.Reset();
+			buffer.Add(p2);
+			timeBuffer.Reset();
+			timeBuffer.Add(t2);
+			position.Set(p2);
+			return;
+		}
+
+		position.Set(p);
 	}
 }

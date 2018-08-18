@@ -69,9 +69,6 @@
     <ClInclude Include="PositionRingBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TabletFilterRaw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TabletFilterPredict.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -132,9 +129,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PositionRingBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TabletFilterRaw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TabletFilterPredict.cpp">

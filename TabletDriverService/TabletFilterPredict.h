@@ -22,10 +22,13 @@ public:
 	
 	void SetPosition(Vector2D vector);
 	bool GetPosition(Vector2D *outputVector);
-	void SetTarget(Vector2D vector);
 	void SetAlgorithm(PredictAlgorithm a);
 	void SetPredictLength(int p);
 	void Update();
+	void SetTargetTimer(Vector2D);
+	void GetPositionPacket(Vector2D*);
+	void UpdatePacket();
+	void SetTarget(Vector2D targetVector);
 
 	TabletFilterPredict();
 	~TabletFilterPredict();

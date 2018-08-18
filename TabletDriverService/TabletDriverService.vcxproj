@@ -181,7 +181,6 @@ xcopy /C /Y "$(ProjectDir)config\init.cfg" "$(SolutionDir)TabletDriverGUI\bin\De
     <ClInclude Include="TabletFilter.h" />
     <ClInclude Include="TabletFilterNoiseReduction.h" />
     <ClInclude Include="TabletFilterPeak.h" />
-    <ClInclude Include="TabletFilterRaw.h" />
     <ClInclude Include="TabletFilterPredict.h" />
     <ClInclude Include="TabletFilterSmoothing.h" />
     <ClInclude Include="TabletSettings.h" />
@@ -203,7 +202,6 @@ xcopy /C /Y "$(ProjectDir)config\init.cfg" "$(SolutionDir)TabletDriverGUI\bin\De
     <ClCompile Include="TabletFilter.cpp" />
     <ClCompile Include="TabletFilterNoiseReduction.cpp" />
     <ClCompile Include="TabletFilterPeak.cpp" />
-    <ClCompile Include="TabletFilterRaw.cpp" />
     <ClCompile Include="TabletFilterPredict.cpp" />
     <ClCompile Include="TabletFilterSmoothing.cpp" />
     <ClCompile Include="TabletSettings.cpp" />

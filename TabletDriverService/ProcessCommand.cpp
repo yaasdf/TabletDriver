@@ -571,9 +571,6 @@ bool ProcessCommand(CommandLine *cmd) {
 		int length = cmd->GetInt(0, tablet->predict.predictLength);
 		if (length != tablet->predict.predictLength)
 			tablet->predict.predictLength = length;
-			if(tablet->raw.StopTimer()) {
-				tablet->raw.StartTimer();
-			}
 		LOG_INFO("Predict Length: %dms\n", length);
 	}
 

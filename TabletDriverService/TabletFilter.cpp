@@ -35,3 +35,10 @@ bool TabletFilter::StopTimer() {
 	}
 	return result;
 }
+
+void TabletFilter::SetTargetPacket(Vector2D vector) { SetTarget(vector); }
+void TabletFilter::SetTargetTimer(Vector2D vector) { SetTarget(vector); }
+void TabletFilter::UpdatePacket() { Update(); }
+void TabletFilter::UpdateTimer() { Update(); }
+void TabletFilter::GetPositionPacket(Vector2D* vector) { GetPosition(vector); }
+void TabletFilter::GetPositionTimer(Vector2D* vector) { GetPosition(vector); }

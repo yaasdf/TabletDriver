@@ -132,8 +132,8 @@ void RunTabletThread() {
 				if (filter != NULL && filter->isEnabled) {
 
 					// Process
-					filter->SetTarget(tablet->state.position);
-					filter->Update();
+					filter->SetTargetPacket(tablet->state.position);
+					filter->UpdatePacket();
 					filter->GetPosition(&tablet->state.position);
 				}
 
@@ -210,10 +210,10 @@ VOID CALLBACK FilterTimerCallback(_In_ PVOID lpParameter, _In_ BOOLEAN TimerOrWa
 		if(!filter->isEnabled) return;
 
 		// Set filter targets
-		filter->SetTarget(position);
+		filter->SetTargetTimer(position);
 
 		// Update filter position
-		filter->Update();
+		filter->UpdateTimer();
 
 		// Set output vector
 		filter->GetPosition(&position);

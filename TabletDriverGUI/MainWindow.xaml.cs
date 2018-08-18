@@ -24,7 +24,7 @@ namespace TabletDriverGUI
     {
 
         // Version
-        public string Version = "0.1.5_p1";
+        public string Version = "0.1.5_p2";
 
         // Console stuff
         private List<string> commandHistory;
@@ -644,7 +644,8 @@ namespace TabletDriverGUI
             //}
 
             config.PredictEnabled = (bool)checkBoxPredict.IsChecked;
-            config.PredictLength = int.Parse(textPredictLength.Text);
+            if (Utils.ParseNumber(textPredictLength.Text, out val))
+                config.PredictLength = (int)val;
             config.PredictAlgorithm = (Configuration.PredictAlgorithms)comboBoxAlgorithm.SelectedIndex;
 
             //
@@ -1705,6 +1706,10 @@ namespace TabletDriverGUI
             {
                 driver.SendCommand("Predict " + config.PredictAlgorithm);
                 driver.SendCommand("PredictLength " + Utils.GetNumberString(config.PredictLength));
+            }
+            else
+            {
+                driver.SendCommand("Predict off");
             }
 
             // Commands after settings
