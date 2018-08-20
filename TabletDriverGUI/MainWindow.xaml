@@ -367,7 +367,9 @@
                     <!--Algorithm-->
                   <GroupBox Header="Rate" VerticalAlignment="Top" HorizontalAlignment="Left" Width="85" Height="50">
                     <ComboBox Name="comboBoxAlgorithm" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center" Height="28" VerticalAlignment="Top">
+                      <!-- <ComboBoxItem>Off</ComboBoxItem> -->
                       <ComboBoxItem Selector.IsSelected="True">Linear</ComboBoxItem>
+                      <ComboBoxItem>Polygon</ComboBoxItem>
                     </ComboBox>
                   </GroupBox>
 

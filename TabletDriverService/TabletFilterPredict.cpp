@@ -3,6 +3,7 @@
 
 #define LOG_MODULE "Predict"
 #include "Logger.h"
+#include <cmath>
 
 //
 // Constructor
@@ -62,6 +63,9 @@ void TabletFilterPredict::Update() {
 	case LINEAR:
 		UpdateLinear();
 		break;
+	case POLYGON:
+		UpdatePolygon();
+		break;
 	default:
 		UpdateRaw();
 		break;
@@ -77,6 +81,10 @@ void TabletFilterPredict::UpdateRaw() {
 	position.y = lastTarget.y;
 }
 
+inline double getMs(const timep &t1, const timep &t2) {
+	return duration_cast<nanoseconds>(t2 - t1).count() / 1000000;
+}
+
 void TabletFilterPredict::UpdateLinear() {
 	// let there be 3 sample points.
 	// p1 is the point before latest, p2 is the latest point, and the predicting point.
@@ -90,29 +98,83 @@ void TabletFilterPredict::UpdateLinear() {
 		position.Set(*buffer[0]);
 		return;
 	}
-	Vector2D p1, p2;
+	Vector2D p1, p2, p3;
 	timep t1, t2;
 	if (buffer.GetLatest(&p1, -1) && buffer.GetLatest(&p2, 0)) {
 		timeBuffer.GetLatest(&t1, -1);
 		timeBuffer.GetLatest(&t2, 0);
-		int tSample = duration_cast<milliseconds>(t2 - t1).count();
-		int tTotal = duration_cast<milliseconds>(t3 - t1).count() + predictLength;
-		Vector2D p;
-		p.x = p1.x + (p2.x - p1.x) / tSample * tTotal;
-		p.y = p1.y + (p2.y - p1.y) / tSample * tTotal;
+		int tSample = (int)getMs(t1, t2);
+		int tTotal = (int)getMs(t1, t3) + predictLength;
+		p3.x = p1.x + (p2.x - p1.x) / tSample * tTotal;
+		p3.y = p1.y + (p2.y - p1.y) / tSample * tTotal;
 		
 		// Skip prediction if dist is too high or low.
-		//double distance2_3 = p.Distance(p1);
-		double distance2_3 = (p.x - p1.x) * (p.x - p1.x) + (p.y - p1.y) * (p.y - p1.y);
+		double distance2_3 = (p3.x - p2.x) * (p3.x - p2.x) + (p3.y - p2.y) * (p3.y - p2.y);
 		if (distance2_3 > 10 * 10 || distance2_3 < 0.05 * 0.05) {
 			buffer.Reset();
 			buffer.Add(p2);
 			timeBuffer.Reset();
 			timeBuffer.Add(t2);
-			position.Set(p2);
-			return;
+		} else
+			position.Set(p3);
+	} else 
+		position.Set(p2);
+}
+
+void TabletFilterPredict::UpdatePolygon() {
+	// let there be 4 sample points: p1, p2, p3 and predicted p4, each with timestamps.
+	// p1, p2 lines up vector vec1;
+	// p2, p3 lines up vector vec2;
+	// p3, p4 lines up vector vec3.
+	// We are calculating the angle between vec1 and vec2, from which we get vec3.
+	// The acceleration between p1, p2 and p3 is also considerated.
+
+	timep t4 = high_resolution_clock::now();
+
+	// One position in the buffer?
+	if(buffer.count == 1) {
+		position.Set(*buffer[0]);
+		return;
+	}
+
+	// ... is this fallback necessary?
+	if(buffer.count == 2) {
+		UpdateLinear();
+		return;
+	}
+
+	Vector2D p0, p1, p2, p3;
+	timep t1, t2, t3;
+	p0.x = 0;
+	p0.y = 0;
+	if (buffer.GetLatest(&p1, -2) && buffer.GetLatest(&p2, -1) && buffer.GetLatest(&p3, 0)) {
+		timeBuffer.GetLatest(&t1, -2);
+		timeBuffer.GetLatest(&t2, -1);
+		timeBuffer.GetLatest(&t3, 0);
+
+		Vector2D vec1, vec2;
+		vec1.x = p2.x - p1.x;
+		vec1.y = p2.y - p1.y;
+		vec2.x = p3.x - p2.x;
+		vec2.y = p3.y - p2.y;
+		double a = acos(vec1.x * vec2.x + vec1.y * vec2.y / (vec1.Distance(p0) * vec2.Distance(p0)));
+		cross12 = vec1.x * vec2.y - vec2.x * vec1.y;
+		if (abs(cross12) < 0.00001)		// same line
+		{
+			
+		}
+		else if (cross12 > 0)	// counter-clockwise
+		{
+
+		}
+		else if (cross12 < 0)	// clockwise
+		{
+
 		}
 
-		position.Set(p);
+		position.Set(p4);
 	}
+	else
+		position.Set(p3);
+
 }

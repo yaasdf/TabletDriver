@@ -6,7 +6,9 @@
 
 enum PredictAlgorithm
 {
+	OFF = -1,
 	LINEAR = 0,
+	POLYGON = 1,
 	ALGORITHM_TOTAL
 };
 
@@ -36,6 +38,7 @@ public:
 private:
 	void UpdateRaw();
 	void UpdateLinear();
+	void UpdatePolygon();
 
 
 };
