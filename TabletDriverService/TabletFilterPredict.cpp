@@ -5,6 +5,11 @@
 #include "Logger.h"
 #include <cmath>
 
+#ifndef PI
+#define PI 3.141592653589793
+#endif // !PI
+
+
 //
 // Constructor
 //
@@ -127,7 +132,7 @@ void TabletFilterPredict::UpdatePolygon() {
 	// p2, p3 lines up vector vec2;
 	// p3, p4 lines up vector vec3.
 	// We are calculating the angle between vec1 and vec2, from which we get vec3.
-	// The acceleration between p1, p2 and p3 is also considerated.
+	// The velocity between p1, p2 and p3 is also considerated.
 
 	timep t4 = high_resolution_clock::now();
 
@@ -143,7 +148,7 @@ void TabletFilterPredict::UpdatePolygon() {
 		return;
 	}
 
-	Vector2D p0, p1, p2, p3;
+	Vector2D p0, p1, p2, p3, p4;
 	timep t1, t2, t3;
 	p0.x = 0;
 	p0.y = 0;
@@ -157,22 +162,46 @@ void TabletFilterPredict::UpdatePolygon() {
 		vec1.y = p2.y - p1.y;
 		vec2.x = p3.x - p2.x;
 		vec2.y = p3.y - p2.y;
-		double a = acos(vec1.x * vec2.x + vec1.y * vec2.y / (vec1.Distance(p0) * vec2.Distance(p0)));
-		cross12 = vec1.x * vec2.y - vec2.x * vec1.y;
-		if (abs(cross12) < 0.00001)		// same line
-		{
-			
-		}
-		else if (cross12 > 0)	// counter-clockwise
-		{
+        
+        if (vec1.x == 0 && vec1.y == 0 || vec2.x == 0 && vec2.y == 0 || getMs(t3, t4) + predictLength == 0) {
+            UpdateLinear();
+            return;
+        }
 
-		}
-		else if (cross12 < 0)	// clockwise
+        double s = atan2(vec2.y, vec2.x) - atan2(vec1.y, vec1.x);
+        if (s > PI) s -= 2 * PI;
+        else if (s < -PI) s += 2 * PI;
+        double a = PI - s;
+        
+		if (abs(a) < 0.001)	// same line
 		{
-
+            UpdateLinear();
+            return;
 		}
-
-		position.Set(p4);
+        else {
+            double t12 = getMs(t1, t2);
+            double t23 = getMs(t2, t3);
+            double t34 = getMs(t3, t4) + predictLength;
+            double v12 = vec1.Distance(p0) / t12;
+            double v23 = vec2.Distance(p0) / t23;
+            double dv = v23 - v12;
+            double l = (v23 - v12 + v23) * t34;
+            double factor = l / vec2.Distance(p0);
+            Vector2D vec3;
+            if (a > 0) 	// counter-clockwise
+            {
+                vec3.x = (vec2.x * cos(a) - vec2.y * sin(a)) * factor;
+                vec3.y = (vec2.y * sin(a) + vec2.y * cos(a)) * factor;
+            }
+            else	    // clockwise
+            {
+                vec3.x = (vec2.x * cos(a) - vec2.y * sin(-a)) * factor;
+                vec3.y = (vec2.y * sin(-a) + vec2.y * cos(a)) * factor;
+            }
+            p4.x = p3.x + vec3.x;
+            p4.y = p3.y + vec3.y;
+            position.Set(p4);
+        }
 	}
 	else
 		position.Set(p3);
