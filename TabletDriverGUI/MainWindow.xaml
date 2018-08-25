@@ -370,6 +370,7 @@
                       <!-- <ComboBoxItem>Off</ComboBoxItem> -->
                       <ComboBoxItem Selector.IsSelected="True">Linear</ComboBoxItem>
                       <ComboBoxItem>Polygon</ComboBoxItem>
+                      <ComboBoxItem>Catmull-Rom</ComboBoxItem>
                     </ComboBox>
                   </GroupBox>
 

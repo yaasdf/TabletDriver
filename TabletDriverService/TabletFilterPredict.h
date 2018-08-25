@@ -8,7 +8,8 @@ enum PredictAlgorithm
 {
 	OFF = -1,
 	LINEAR = 0,
-	POLYGON = 1,
+	POLYGON,
+	CATMULL,
 	ALGORITHM_TOTAL
 };
 
@@ -21,6 +22,8 @@ public:
 	Vector2D lastTarget;
 	int predictLength;
 	PredictAlgorithm algorithm;
+
+	double lastAngle;
 	
 	void SetPosition(Vector2D vector);
 	bool GetPosition(Vector2D *outputVector);
@@ -36,9 +39,10 @@ public:
 	~TabletFilterPredict();
 
 private:
-	void UpdateRaw();
-	void UpdateLinear();
-	void UpdatePolygon();
+	Vector2D UpdateRaw();
+	Vector2D UpdateLinear();
+	Vector2D UpdatePolygon();
+	Vector2D UpdateCatmull();
 
 
 };

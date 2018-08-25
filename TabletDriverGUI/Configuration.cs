@@ -38,7 +38,8 @@ namespace TabletDriverGUI
         {
             off = -1,
             Linear = 0,
-            Polygon = 1
+            Polygon,
+            Catmull_Rom
         }
 
         public Area DesktopSize;
