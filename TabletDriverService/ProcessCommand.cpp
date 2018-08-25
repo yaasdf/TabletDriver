@@ -561,7 +561,15 @@ bool ProcessCommand(CommandLine *cmd) {
 				tablet->predict.isEnabled = true;
 				tablet->predict.SetAlgorithm(PredictAlgorithm::LINEAR);
 				LOG_INFO("Prediction = Linear\n");
-			}
+			} else if (stringValue == "polygon") {
+				tablet->predict.isEnabled = true;
+				tablet->predict.SetAlgorithm(PredictAlgorithm::POLYGON);
+				LOG_INFO("Prediction = Polygon\n");
+			} else if (stringValue == "catmull_rom") {
+				tablet->predict.isEnabled = true;
+				tablet->predict.SetAlgorithm(PredictAlgorithm::CATMULL);
+				LOG_INFO("Prediction = Catmull-Rom Spline\n");
+            }
 		}
 	}
 

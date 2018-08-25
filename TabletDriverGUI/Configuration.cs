@@ -36,7 +36,10 @@ namespace TabletDriverGUI
         public PredictAlgorithms PredictAlgorithm;
         public enum PredictAlgorithms
         {
-            Linear = 0
+            off = -1,
+            Linear = 0,
+            Polygon,
+            Catmull_Rom
         }
 
         public Area DesktopSize;
