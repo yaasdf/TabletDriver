@@ -368,14 +368,15 @@
                   </GroupBox>
 
                   <!-- Filter Rate -->
-                  <GroupBox Header="Rate" VerticalAlignment="Top" HorizontalAlignment="Left" Width="85" Height="50">
-                    <ComboBox Name="comboBoxSmoothingRate" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center" HorizontalAlignment="Left" Width="73">
+                  <GroupBox Header="Rate/Hz" VerticalAlignment="Top" HorizontalAlignment="Left" Width="76" Height="50">
+                    <ComboBox Name="comboBoxSmoothingRate" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center" HorizontalAlignment="Left" Width="64">
 
 
-                      <ComboBoxItem>500 Hz</ComboBoxItem>
-                      <ComboBoxItem>333 Hz</ComboBoxItem>
-                      <ComboBoxItem Selector.IsSelected="True">250 Hz</ComboBoxItem>
-                      <ComboBoxItem>125 Hz</ComboBoxItem>
+                      <ComboBoxItem>1000</ComboBoxItem>
+                      <ComboBoxItem>500</ComboBoxItem>
+                      <ComboBoxItem>333</ComboBoxItem>
+                      <ComboBoxItem Selector.IsSelected="True">250</ComboBoxItem>
+                      <ComboBoxItem>125</ComboBoxItem>
                     </ComboBox>
                   </GroupBox>
 
@@ -437,7 +438,7 @@
               </GroupBox>
 
                               <!-- Predict -->
-              <GroupBox Name="groupPredict" Header="Prediction" VerticalAlignment="Bottom" Margin="5,0,0,0" HorizontalAlignment="Left">
+              <GroupBox Name="groupPredict" Header="Prediction Filter" VerticalAlignment="Bottom" Margin="5,0,0,0" HorizontalAlignment="Left">
                 <GroupBox.ToolTip>
                   <StackPanel>
                     <TextBlock FontWeight="Bold">
@@ -455,7 +456,7 @@
 
                     <!--Algorithm-->
                   <GroupBox Header="Algorithm" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" Height="50">
-                    <ComboBox Name="comboBoxAlgorithm" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center" Height="28" VerticalAlignment="Top">
+                    <ComboBox Name="comboBoxAlgorithm" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center" Height="26" VerticalAlignment="Center">
                       <!-- <ComboBoxItem>Off</ComboBoxItem> -->
                       <ComboBoxItem Selector.IsSelected="True">Linear</ComboBoxItem>
                       <ComboBoxItem>Polygon</ComboBoxItem>
@@ -473,16 +474,6 @@
                     </Grid>
                   </GroupBox>
 
-                 <!-- Filter Rate -->
-                  <GroupBox Header="Interval" VerticalAlignment="Top" HorizontalAlignment="Left" Width="85" Height="50">
-                    <ComboBox Name="comboBoxPredictInterval" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center">
-                      <ComboBoxItem>1000 Hz</ComboBoxItem>
-                      <ComboBoxItem>500 Hz</ComboBoxItem>
-                      <ComboBoxItem>333 Hz</ComboBoxItem>
-                      <ComboBoxItem>250 Hz</ComboBoxItem>
-                      <ComboBoxItem>Device</ComboBoxItem>
-                    </ComboBox>
-                  </GroupBox>
 
                    <!--Filter enabled--> 
                   <CheckBox Name="checkBoxPredict"

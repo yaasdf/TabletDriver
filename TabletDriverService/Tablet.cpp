@@ -54,9 +54,8 @@ Tablet::Tablet() {
 	memset(&state, 0, sizeof(state));
 
 	// Filters
-	filterTimed[0] = &predict;
-	filterTimed[1] = &smoothing;
-	filterTimedCount = 2;
+	filterTimed[0] = &smoothing;
+	filterTimedCount = 1;
 	//filterPacket[1] = &peak;
 	//filterPacket[0] = &noise;
 	filterPacket[0] = &predict;

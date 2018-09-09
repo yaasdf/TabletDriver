@@ -8,12 +8,13 @@
 const double PI = 3.141592653589793;
 
 
+/////////////////////////////////////////////////////////////////////////////////
+
 //
 // Constructor
 //
 TabletFilterPredict::TabletFilterPredict() {
 	SetAlgorithm(LINEAR);
-	timerInterval = 2;
 	predictLength = 0;
 	buffer.SetLength(10);
 	timeBuffer.SetLength(10);
@@ -27,9 +28,10 @@ TabletFilterPredict::~TabletFilterPredict() {
 }
 
 
-//
-// TabletFilter methods
-//
+/////////////////////////////////////////////////////////////////////////////////
+
+// Parameter settings
+
 void TabletFilterPredict::SetAlgorithm(PredictAlgorithm a) {
 	algorithm = a;
 }
@@ -38,27 +40,29 @@ void TabletFilterPredict::SetPredictLength(int p) {
 	predictLength = p;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
+// APIs
+
 void TabletFilterPredict::SetTarget(Vector2D targetVector) {
 	lastTarget.Set(targetVector);
 	buffer.Add(targetVector);
 	timeBuffer.Add(high_resolution_clock::now());
 }
-void TabletFilterPredict::SetTargetTimer(Vector2D targetVector) {
-    // do nothing
-}
+
 void TabletFilterPredict::SetPosition(Vector2D vector) {
 	position.x = vector.x;
 	position.y = vector.y;
-}
-bool TabletFilterPredict::GetPositionPacket(Vector2D* vector) {
-    if (timerInterval == -1)
-        return GetPosition(vector);
 }
 bool TabletFilterPredict::GetPosition(Vector2D *outputVector) {
 	outputVector->x = position.x;
 	outputVector->y = position.y;
 	return true;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+
+// util functions
 
 inline double getMs(const timep &t1, const timep &t2) {
 	return duration_cast<nanoseconds>(t2 - t1).count() / 1000000.0;
@@ -67,6 +71,10 @@ inline double getMs(const timep &t1, const timep &t2) {
 inline int getMsD(const timep &t1, const timep &t2) {
 	return duration_cast<milliseconds>(t2 - t1).count();
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+
+// position handling
 
 void TabletFilterPredict::Update()
 {
@@ -121,12 +129,6 @@ void TabletFilterPredict::Update()
 	}
 }
 
-void TabletFilterPredict::UpdatePacket() {
-    if (timerInterval == -1)
-        return Update();
-}
-
-
 Vector2D TabletFilterPredict::UpdateRaw() {
 	return lastTarget;
 }
@@ -148,6 +150,7 @@ Vector2D MainLinear3(const Vector2D &p1, const Vector2D &p2, const Vector2D &p3,
 	// not implemented haha
 	return MainLinear2(p2, p3, t2, t3, t4, predictLength);
 }
+
 Vector2D MainPolygon(const Vector2D &p1, const Vector2D &p2, const Vector2D &p3,
     const timep &t1, const timep &t2, const timep &t3, const timep &t4, int predictLength)
 {
@@ -261,6 +264,11 @@ Vector2D MainCatmull(const Vector2D &p1, const Vector2D &pp2, const Vector2D &pp
     //}
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////
+
+// Update functions, called by Update()
+
 Vector2D TabletFilterPredict::UpdateLinear()
 {
 	timep t3 = high_resolution_clock::now();
@@ -328,6 +336,4 @@ Vector2D TabletFilterPredict::UpdateCatmull() {
 	LOG_ERROR("Invalid buffer\n");
 	return position;
 }
-
-
 

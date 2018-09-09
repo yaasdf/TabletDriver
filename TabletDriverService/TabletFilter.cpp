@@ -15,20 +15,14 @@ TabletFilter::TabletFilter() {
 // Start Timer
 //
 bool TabletFilter::StartTimer() {
-    if (timerInterval > 0)
-    {
-        LOG_INFO("Starting Timer with Interval %dms\n", timerInterval);
-        return CreateTimerQueueTimer(
-            &timer,
-            NULL, callback,
-            NULL,
-            0,
-            timerInterval,
-            WT_EXECUTEDEFAULT
-        );
-    }
-    else
-        return false;
+    return CreateTimerQueueTimer(
+        &timer,
+        NULL, callback,
+        NULL,
+        0,
+        timerInterval,
+        WT_EXECUTEDEFAULT
+    );
 }
 
 
@@ -43,10 +37,3 @@ bool TabletFilter::StopTimer() {
 	}
 	return result;
 }
-
-void TabletFilter::SetTargetPacket(Vector2D vector) { SetTarget(vector); }
-void TabletFilter::SetTargetTimer(Vector2D vector) { SetTarget(vector); }
-void TabletFilter::UpdatePacket() { Update(); }
-void TabletFilter::UpdateTimer() { Update(); }
-bool TabletFilter::GetPositionPacket(Vector2D* vector) { return GetPosition(vector); }
-bool TabletFilter::GetPositionTimer(Vector2D* vector) { return GetPosition(vector); }

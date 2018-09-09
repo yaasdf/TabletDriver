@@ -183,7 +183,7 @@ namespace TabletDriverGUI
             // Smoothing rate ComboBox
             //
             comboBoxSmoothingRate.Items.Clear();
-            for (int i = 2; i <= 8; i++)
+            for (int i = 1; i <= 8; i++)
             {
                 comboBoxSmoothingRate.Items.Add((1000.0 / i).ToString("0") + " Hz");
             }
@@ -481,7 +481,7 @@ namespace TabletDriverGUI
             //
             checkBoxSmoothing.IsChecked = config.SmoothingEnabled;
             textSmoothingLatency.Text = Utils.GetNumberString(config.SmoothingLatency);
-            comboBoxSmoothingRate.SelectedIndex = config.SmoothingInterval - 2;
+            comboBoxSmoothingRate.SelectedIndex = config.SmoothingInterval - 1;
             if (config.SmoothingEnabled)
             {
                 textSmoothingLatency.IsEnabled = true;
@@ -499,18 +499,15 @@ namespace TabletDriverGUI
             checkBoxPredict.IsChecked = config.PredictEnabled;
             textPredictLength.Text = Utils.GetNumberString(config.PredictLength);
             comboBoxAlgorithm.SelectedIndex = (int)config.PredictAlgorithm;
-            comboBoxPredictInterval.SelectedIndex = config.PredictInterval > 0 ? config.PredictInterval - 1 : 4;
             if (config.PredictEnabled)
             {
                 textPredictLength.IsEnabled = true;
                 comboBoxAlgorithm.IsEnabled = true;
-                comboBoxPredictInterval.IsEnabled = true;
             }
             else
             {
                 textPredictLength.IsEnabled = false;
                 comboBoxAlgorithm.IsEnabled = false;
-                comboBoxPredictInterval.IsEnabled = false;
             }
 
             //
@@ -644,7 +641,7 @@ namespace TabletDriverGUI
 
             // Filter
             config.SmoothingEnabled = (bool)checkBoxSmoothing.IsChecked;
-            config.SmoothingInterval = comboBoxSmoothingRate.SelectedIndex + 2;
+            config.SmoothingInterval = comboBoxSmoothingRate.SelectedIndex + 1;
             if (Utils.ParseNumber(textSmoothingLatency.Text, out val))
                 config.SmoothingLatency = val;
 
@@ -664,25 +661,15 @@ namespace TabletDriverGUI
             if (Utils.ParseNumber(textPredictLength.Text, out val))
                 config.PredictLength = (int)val;
             config.PredictAlgorithm = (Configuration.PredictAlgorithms)comboBoxAlgorithm.SelectedIndex;
-            switch (comboBoxPredictInterval.SelectedIndex)
-            {
-                case 0: config.PredictInterval = 1; break;
-                case 1: config.PredictInterval = 2; break;
-                case 2: config.PredictInterval = 3; break;
-                case 3: config.PredictInterval = 4; break;
-                case 4: config.PredictInterval = -1; break;
-            }
             if (config.PredictEnabled)
             {
                 textPredictLength.IsEnabled = true;
                 comboBoxAlgorithm.IsEnabled = true;
-                comboBoxPredictInterval.IsEnabled = true;
             }
             else
             {
                 textPredictLength.IsEnabled = false;
                 comboBoxAlgorithm.IsEnabled = false;
-                comboBoxPredictInterval.IsEnabled = false;
             }
 
             //
