@@ -47,33 +47,37 @@ double Vector2D::Distance(Vector2D target) {
 
 Vector2D Vector2D::operator+ (const Vector2D &rhs) const
 {
-	Vector2D v = *this;
-	v.x += rhs.x;
-	v.y += rhs.y;
+    Vector2D v;
+	v.x = x + rhs.x;
+	v.y = y + rhs.y;
 	return v;
 }
 Vector2D Vector2D::operator- (const Vector2D &rhs) const
 {
-	Vector2D v = *this;
-	v.x -= rhs.x;
-	v.y -= rhs.y;
+    Vector2D v;
+	v.x = x - rhs.x;
+	v.y = y - rhs.y;
 	return v;
 }
 Vector2D Vector2D::operator* (const double rhs) const 
 {
-	Vector2D v = *this;
-	v.x *= rhs;
-	v.y *= rhs;
+    Vector2D v;
+	v.x = x * rhs;
+	v.y = y * rhs;
 	return v;
 }
 Vector2D Vector2D::operator/ (const double rhs) const
 {
-	Vector2D v = *this;
-	v.x /= rhs;
-	v.y /= rhs;
+    Vector2D v;
+	v.x = x / rhs;
+	v.y = y / rhs;
 	return v;
 }
 Vector2D operator*(const double lhs, const Vector2D &rhs)
 {
 	return rhs.operator*(lhs);
+}
+bool Vector2D::operator== (const Vector2D &rhs) const
+{
+	return x == rhs.x && y == rhs.y;
 }

@@ -8,7 +8,7 @@ public:
 
 	HANDLE timer;
 	WAITORTIMERCALLBACK callback;
-	double timerInterval;
+	int timerInterval;
 
 	bool isEnabled;
 	bool isValid;
@@ -23,7 +23,7 @@ public:
 	virtual void SetTargetTimer(Vector2D vector);
 	virtual void UpdatePacket();
 	virtual void UpdateTimer();
-	virtual void GetPositionPacket(Vector2D *vector);
-	virtual void GetPositionTimer(Vector2D *vector);
+	virtual bool GetPositionPacket(Vector2D *vector);
+	virtual bool GetPositionTimer(Vector2D *vector);
 };
 

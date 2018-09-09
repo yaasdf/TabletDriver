@@ -477,7 +477,6 @@ bool ProcessCommand(CommandLine *cmd) {
 	//
 	// Smoothing filter
 	//
-#if 0
 	else if(cmd->is("Smoothing")) {
 		if(!CheckTablet()) return true;
 		double latency = cmd->GetDouble(0, tablet->smoothing.GetLatency());
@@ -513,14 +512,12 @@ bool ProcessCommand(CommandLine *cmd) {
 			LOG_INFO("Smoothing = off\n");
 		}
 	}
-#endif
 
-#if 0
 	//
 	// Smoothing filter interval
 	//
 	else if(cmd->is("SmoothingInterval")) {
-		int interval = cmd->GetInt(0, (int)round(tablet->smoothing.timerInterval));
+		int interval = cmd->GetInt(0, tablet->smoothing.timerInterval);
 
 		// 10 Hz
 		if(interval > 100) interval = 100;
@@ -529,7 +526,7 @@ bool ProcessCommand(CommandLine *cmd) {
 		if(interval < 1) interval = 1;
 
 		// Interval changed?
-		if(interval != (int)round(tablet->smoothing.timerInterval)) {
+		if(interval != tablet->smoothing.timerInterval) {
 			tablet->smoothing.timerInterval = interval;
 			tablet->smoothing.SetLatency(tablet->smoothing.latency);
 			if(tablet->smoothing.StopTimer()) {
@@ -540,7 +537,6 @@ bool ProcessCommand(CommandLine *cmd) {
 		LOG_INFO("Smoothing Interval = %d (%0.2f Hz, %0.2f ms, %f)\n", interval, 1000.0 / interval, tablet->smoothing.latency, tablet->smoothing.weight);
 
 	}
-#endif
 
 	// Predict filter
 	else if (cmd->is("Predict")) {
@@ -581,6 +577,33 @@ bool ProcessCommand(CommandLine *cmd) {
 			tablet->predict.predictLength = length;
 		LOG_INFO("Predict Length: %dms\n", length);
 	}
+
+    // Predict Interval
+    else if (cmd->is("PredictInterval")) {
+        int interval = cmd->GetInt(0, tablet->predict.timerInterval);
+
+        // 10 Hz
+        if (interval > 100) interval = 100;
+
+        // 1000 Hz
+        if (interval >= 0 && interval < 1) interval = 1;
+
+        // Off if -1
+        // leave to filter
+        if (interval < 0) interval = -1;
+
+        // Interval changed?
+        if (interval != tablet->predict.timerInterval) {
+            tablet->predict.timerInterval = interval;
+            if (tablet->predict.StopTimer()) {
+                tablet->predict.StartTimer();
+            }
+        }
+        if (interval == -1)
+            LOG_INFO("Predict Interval: up to device \n");
+        else
+            LOG_INFO("Predict Interval: %dms\n", interval);
+    }
 
 	//
 	// Noise reduction filter

@@ -19,6 +19,7 @@ public:
 	Vector2D operator- (const Vector2D &rhs) const;
 	Vector2D operator* (const double rhs) const;
 	Vector2D operator/ (const double rhs) const;
+	bool operator== (const Vector2D &rhs) const;
 	friend Vector2D operator*(const double lhs, const Vector2D &rhs);
 };
 

@@ -54,13 +54,13 @@ Tablet::Tablet() {
 	memset(&state, 0, sizeof(state));
 
 	// Filters
-	//filterTimed[0] = &smoothing;
 	filterTimed[0] = &predict;
-	filterTimedCount = 1;
+	filterTimed[1] = &smoothing;
+	filterTimedCount = 2;
 	//filterPacket[1] = &peak;
-	filterPacket[0] = &noise;
-	filterPacket[1] = &predict;
-	filterPacketCount = 2;
+	//filterPacket[0] = &noise;
+	filterPacket[0] = &predict;
+	filterPacketCount = 1;
 
 	peak.isEnabled = true;
 
@@ -280,7 +280,7 @@ int Tablet::ReadPosition() {
 			}
 		}
 	}
-
+	
 	// Convert report data to state
 	state.position.x = ((double)reportData.x / (double)settings.maxX) * settings.width;
 	state.position.y = ((double)reportData.y / (double)settings.maxY) * settings.height;

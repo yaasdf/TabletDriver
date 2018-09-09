@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "TabletFilter.h"
+#define LOG_MODULE "Filter"
+#include "Logger.h"
 
 
 TabletFilter::TabletFilter() {
@@ -13,14 +15,20 @@ TabletFilter::TabletFilter() {
 // Start Timer
 //
 bool TabletFilter::StartTimer() {
-	return CreateTimerQueueTimer(
-		&timer,
-		NULL, callback,
-		NULL,
-		0,
-		(int)timerInterval,
-		WT_EXECUTEDEFAULT
-	);
+    if (timerInterval > 0)
+    {
+        LOG_INFO("Starting Timer with Interval %dms\n", timerInterval);
+        return CreateTimerQueueTimer(
+            &timer,
+            NULL, callback,
+            NULL,
+            0,
+            timerInterval,
+            WT_EXECUTEDEFAULT
+        );
+    }
+    else
+        return false;
 }
 
 
@@ -40,5 +48,5 @@ void TabletFilter::SetTargetPacket(Vector2D vector) { SetTarget(vector); }
 void TabletFilter::SetTargetTimer(Vector2D vector) { SetTarget(vector); }
 void TabletFilter::UpdatePacket() { Update(); }
 void TabletFilter::UpdateTimer() { Update(); }
-void TabletFilter::GetPositionPacket(Vector2D* vector) { GetPosition(vector); }
-void TabletFilter::GetPositionTimer(Vector2D* vector) { GetPosition(vector); }
+bool TabletFilter::GetPositionPacket(Vector2D* vector) { return GetPosition(vector); }
+bool TabletFilter::GetPositionTimer(Vector2D* vector) { return GetPosition(vector); }

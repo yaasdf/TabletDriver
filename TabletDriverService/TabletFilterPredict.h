@@ -15,7 +15,6 @@ enum PredictAlgorithm
 
 class TabletFilterPredict: public TabletFilter {
 public:
-
 	PositionRingBuffer buffer;
 	ChronoRingBuffer timeBuffer;
 	Vector2D position;
@@ -23,15 +22,13 @@ public:
 	int predictLength;
 	PredictAlgorithm algorithm;
 
-	double lastAngle;
-	
 	void SetPosition(Vector2D vector);
 	bool GetPosition(Vector2D *outputVector);
 	void SetAlgorithm(PredictAlgorithm a);
 	void SetPredictLength(int p);
 	void Update();
 	void SetTargetTimer(Vector2D);
-	void GetPositionPacket(Vector2D*);
+	bool GetPositionPacket(Vector2D*);
 	void UpdatePacket();
 	void SetTarget(Vector2D targetVector);
 

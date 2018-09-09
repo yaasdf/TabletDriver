@@ -32,6 +32,7 @@ namespace TabletDriverGUI
         public bool SmoothingEnabled;
 
         public int PredictLength;
+        public int PredictInterval;
         public bool PredictEnabled;
         public PredictAlgorithms PredictAlgorithm;
         public enum PredictAlgorithms
@@ -96,6 +97,7 @@ namespace TabletDriverGUI
 
             PredictEnabled = false;
             PredictLength = 0;
+            PredictInterval = 2;
             PredictAlgorithm = PredictAlgorithms.Linear;
 
             CommandsAfter = new string[] { "" };

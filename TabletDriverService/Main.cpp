@@ -121,7 +121,7 @@ void RunTabletThread() {
 		//
 		// Is there any filters?
 		if (tablet->filterPacketCount > 0) {
-
+		
 			// Loop through filters
 			for (int filterIndex = 0; filterIndex < tablet->filterPacketCount; filterIndex++) {
 
@@ -134,7 +134,7 @@ void RunTabletThread() {
 					// Process
 					filter->SetTargetPacket(tablet->state.position);
 					filter->UpdatePacket();
-					filter->GetPosition(&tablet->state.position);
+					filter->GetPositionPacket(&tablet->state.position);
 				}
 
 			}
@@ -144,7 +144,7 @@ void RunTabletThread() {
 		// Timed filter enabled?
 		filterTimedEnabled = false;
 		for (int filterIndex = 0; filterIndex < tablet->filterTimedCount; filterIndex++) {
-			if (tablet->filterTimed[filterIndex]->isEnabled)
+			if (tablet->filterTimed[filterIndex]->isEnabled && tablet->filterTimed[filterIndex]->timerInterval > 0)
 				filterTimedEnabled = true;
 		}
 
@@ -201,13 +201,13 @@ VOID CALLBACK FilterTimerCallback(_In_ PVOID lpParameter, _In_ BOOLEAN TimerOrWa
 	position.Set(tablet->state.position);
 
 	// Loop through filters
-	for(int filterIndex = 0; filterIndex < tablet->filterTimedCount; filterIndex++) {
+	for(int filterIndex = 0; filterIndex < tablet->filterTimedCount; ++filterIndex) {
 
 		// Filter
 		filter = tablet->filterTimed[filterIndex];
 
 		// Filter enabled?
-		if(!filter->isEnabled) return;
+        if (!filter->isEnabled || filter->timerInterval <= 0) continue;
 
 		// Set filter targets
 		filter->SetTargetTimer(position);
@@ -216,8 +216,7 @@ VOID CALLBACK FilterTimerCallback(_In_ PVOID lpParameter, _In_ BOOLEAN TimerOrWa
 		filter->UpdateTimer();
 
 		// Set output vector
-		filter->GetPosition(&position);
-
+		filter->GetPositionTimer(&position);
 	}
 
 
@@ -255,7 +254,6 @@ VOID CALLBACK FilterTimerCallback(_In_ PVOID lpParameter, _In_ BOOLEAN TimerOrWa
 	//
 	else {
 
-
 		// Map position to virtual screen (values betweeb 0->1)
 		mapper->GetScreenPosition(&position.x, &position.y);
 
@@ -266,7 +264,6 @@ VOID CALLBACK FilterTimerCallback(_In_ PVOID lpParameter, _In_ BOOLEAN TimerOrWa
 			position.y,
 			tablet->state.pressure
 		);
-
 
 		// Write report to VMulti device
 		if(vmulti->HasReportChanged() && tablet->state.isValid) {
@@ -282,7 +279,7 @@ VOID CALLBACK FilterTimerCallback(_In_ PVOID lpParameter, _In_ BOOLEAN TimerOrWa
 //
 // Main
 //
-int main(int argc, char**argv) {
+int __cdecl main(int argc, char**argv) {
 	string line;
 	string filename;
 	CommandLine *cmd;
@@ -379,9 +376,13 @@ int main(int argc, char**argv) {
 				running = true;
 
 				// Timed filter timer
-				if(tablet->filterPacketCount > 0) {
-					tablet->filterTimed[0]->callback = FilterTimerCallback;
-					tablet->filterTimed[0]->StartTimer();
+				if(tablet->filterTimedCount > 0) {
+                    for (int i = 0; i < tablet->filterTimedCount; ++i)
+                    {
+                        tablet->filterTimed[i]->callback = FilterTimerCallback;
+                        if (tablet->filterTimed[i]->timerInterval <= 0) continue;
+                        tablet->filterTimed[i]->StartTimer();
+                    }
 				}
 
 				// Start the tablet thread
@@ -433,7 +434,9 @@ void CleanupAndExit(int code) {
 	// Delete filter timer
 	if(tablet != NULL) {
 		if(tablet->filterTimedCount != 0) {
-			tablet->filterTimed[0]->StopTimer();
+            for (int filterIndex = 0; filterIndex < tablet->filterTimedCount; ++filterIndex) {
+                tablet->filterTimed[filterIndex]->StopTimer();
+            }
 		}
 	}
 

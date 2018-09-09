@@ -13,7 +13,7 @@ const double PI = 3.141592653589793;
 //
 TabletFilterPredict::TabletFilterPredict() {
 	SetAlgorithm(LINEAR);
-	timerInterval = 1;
+	timerInterval = 2;
 	predictLength = 0;
 	buffer.SetLength(10);
 	timeBuffer.SetLength(10);
@@ -44,17 +44,16 @@ void TabletFilterPredict::SetTarget(Vector2D targetVector) {
 	timeBuffer.Add(high_resolution_clock::now());
 }
 void TabletFilterPredict::SetTargetTimer(Vector2D targetVector) {
-	// do nothing
+    // do nothing
 }
-// Set position
 void TabletFilterPredict::SetPosition(Vector2D vector) {
 	position.x = vector.x;
 	position.y = vector.y;
 }
-void TabletFilterPredict::GetPositionPacket(Vector2D* vector) {
-	// do nothing
+bool TabletFilterPredict::GetPositionPacket(Vector2D* vector) {
+    if (timerInterval == -1)
+        return GetPosition(vector);
 }
-// Get position
 bool TabletFilterPredict::GetPosition(Vector2D *outputVector) {
 	outputVector->x = position.x;
 	outputVector->y = position.y;
@@ -123,7 +122,8 @@ void TabletFilterPredict::Update()
 }
 
 void TabletFilterPredict::UpdatePacket() {
-	// Do nothing
+    if (timerInterval == -1)
+        return Update();
 }
 
 
@@ -156,7 +156,7 @@ Vector2D MainPolygon(const Vector2D &p1, const Vector2D &p2, const Vector2D &p3,
 	// p2, p3 lines up vector vec2;
 	// p3, p4 lines up vector vec3.
 	// We are calculating the angle between vec1 and vec2, from which we get vec3.
-	// The velocity between p1, p2 and p3 is also considerated.
+	// The acceleration is ignored since it doesn't work as expected.
 
 	// The Y axis is reversed
 	Vector2D p0;
@@ -176,9 +176,10 @@ Vector2D MainPolygon(const Vector2D &p1, const Vector2D &p2, const Vector2D &p3,
 	if (s < -PI) s += 2 * PI;
 	double a = abs(s);
 
-	double v12 = vec1.Distance(p0) / getMs(t1, t2);
-	double v23 = vec2.Distance(p0) / getMs(t2, t3);
-	double v34 = v23 - v12 + v23;
+	//double v12 = vec1.Distance(p0) / getMs(t1, t2);
+	//double v23 = vec2.Distance(p0) / getMs(t2, t3);
+	//double v34 = v23 - v12 + v23;
+    double v34 = vec2.Distance(p0) / getMs(t2, t3); // v23
 
 	Vector2D vec3;
 	double cosa = cos(a);
@@ -186,12 +187,12 @@ Vector2D MainPolygon(const Vector2D &p1, const Vector2D &p2, const Vector2D &p3,
 	if (s > 0) 	// counter-clockwise
 	{
 		vec3.x = vec2.x * cosa - vec2.y * sina;
-		vec3.y = vec2.y * sina + vec2.y * cosa;
+		vec3.y = vec2.x * sina + vec2.y * cosa;
 	}
 	else	    // clockwise
 	{
 		vec3.x = vec2.x * cosa + vec2.y * sina;
-		vec3.y = vec2.y * (-sina) + vec2.y * cosa;
+		vec3.y = vec2.x * (-sina) + vec2.y * cosa;
 	}
 	double l2 = vec2.Distance(p0);
 	double l3 = v34 * (getMs(t3, t4) + predictLength);
@@ -204,6 +205,61 @@ Vector2D MainPolygon(const Vector2D &p1, const Vector2D &p2, const Vector2D &p3,
 	);
 }
 
+Vector2D MainCatmull(const Vector2D &p1, const Vector2D &pp2, const Vector2D &pp3,
+    const timep &t1, const timep &t2, const timep &t3, const timep &t4, int predictLength)
+{
+    Vector2D p2 = pp2;
+    Vector2D p3 = pp3;
+    Vector2D p4;
+    // Polygonal reach to p4f and p5f, reuse p4f to get p5f
+    timep t4f = t3 - t2 + t3;
+    Vector2D p4f = MainPolygon(p1, p2, p3, t1, t2, t3, t4f, 0);
+    timep t5f = t4f - t3 + t4f;
+    Vector2D p5f = MainPolygon(p2, p3, p4f, t2, t3, t4f, t5f, 0);
+
+    // f should be in [0, 1] here but some exceptions would happen
+    double f = (getMs(t3, t4) + predictLength) / getMs(t3, t4f);
+
+    // Decided to let it go since we are having fun
+    //if (f < 1.5)
+    {
+        // for debug, to be commented
+        //Vector2D p44 = MainPolygon(p1, p2, p3, t1, t2, t3, t4, predictLength);
+
+        // reverse Y
+        double y = tablet->settings.height;
+        p2.y = y - p2.y;
+        p3.y = y - p3.y;
+        p4f.y = y - p4f.y;
+        p5f.y = y - p5f.y;
+
+        Vector2D p4;
+        double f2 = f * f;
+        double f3 = f2 * f;
+        p4.x = 0.5 * (
+            (p3.x * 2) +
+            (-p2.x + p4f.x) * f +
+            ((p2.x * 2) - (p3.x * 5) + (p4f.x * 4) - p5f.x) * f2 +
+            (-p2.x + (p3.x * 3) - (p4f.x * 3) + p5f.x) * f3
+            );
+        p4.y = 0.5 * (
+            (p3.y * 2) +
+            (-p2.y + p4f.y) * f +
+            ((p2.y * 2) - (p3.y * 5) + (p4f.y * 4) - p5f.y) * f2 +
+            (-p2.y + (p3.y * 3) - (p4f.y * 3) + p5f.y) * f3
+            );
+
+        // reverse Y back here
+        p4.y = y - p4.y;
+
+        //LOG_INFO("%lf : %lf, %lf | %lf, %lf\n", f, p44.x, p44.y, p4.x, p4.y);
+        return p4;
+    }
+    //else
+    //{
+    //    return MainPolygon(p1, p2, p3, t1, t2, t3, t4, predictLength);
+    //}
+}
 
 Vector2D TabletFilterPredict::UpdateLinear()
 {
@@ -237,7 +293,8 @@ Vector2D TabletFilterPredict::UpdatePolygon()
 		timeBuffer.GetLatest(&t1, -2);
 		timeBuffer.GetLatest(&t2, -1);
 		timeBuffer.GetLatest(&t3, 0);
-		return MainPolygon(p1, p2, p3, t1, t2, t3, t4, predictLength);
+		p4 = MainPolygon(p1, p2, p3, t1, t2, t3, t4, predictLength);
+        return p4;
 	}
 
 	// some error occurred
@@ -257,58 +314,14 @@ Vector2D TabletFilterPredict::UpdateCatmull() {
 		return UpdateLinear();
 	}
 
-	Vector2D p1, p2, p3;
+	Vector2D p1, p2, p3, p4;
 	timep t1, t2, t3;
 	if (buffer.GetLatest(&p1, -2) && buffer.GetLatest(&p2, -1) && buffer.GetLatest(&p3, 0)) {
 		timeBuffer.GetLatest(&t1, -2);
 		timeBuffer.GetLatest(&t2, -1);
 		timeBuffer.GetLatest(&t3, 0);
-
-		// Polygonal reach to p4f and p5f, reuse p4f to get p5f
-		timep t4f = t3 - t2 + t3;
-		Vector2D p4f = MainPolygon(p1, p2, p3, t1, t2, t3, t4f, 0);
-		timep t5f = t4f - t3 + t4f;
-		Vector2D p5f = MainPolygon(p2, p3, p4f, t2, t3, t4f, t5f, 0);
-
-		// f should be in [0, 1] here but some exceptions would happen
-		double f = (getMs(t3, t4) + predictLength) / getMs(t3, t4f);
-		if (f < 1.5)
-		{
-			// for debug, to be commented
-			//Vector2D p44 = MainPolygon(p1, p2, p3, t1, t2, t3, t4, predictLength);
-
-			// reverse Y
-			double y = tablet->settings.height;
-			p2.y = y - p2.y;
-			p3.y = y - p3.y;
-			p4f.y = y - p4f.y;
-			p5f.y = y - p5f.y;
-
-			Vector2D p4;
-			p4.x = 0.5 * (
-				(p3.x * 2) + 
-				(-p2.x + p4f.x) * f + 
-				((p2.x * 2) - (p3.x * 5) + (p4f.x * 4) - p5f.x) * f * f +
-				(-p2.x + (p3.x * 3) - (p4f.x * 3) + p5f.x) * f * f * f
-				);
-			p4.y = 0.5 * (
-				(p3.y * 2) + 
-				(-p2.y + p4f.y) * f + 
-				((p2.y * 2) - (p3.y * 5) + (p4f.y * 4) - p5f.y) * f * f +
-				(-p2.y + (p3.y * 3) - (p4f.y * 3) + p5f.y) * f * f * f
-				);
-
-			// reverse Y back here
-			p4.y = y - p4.y;
-
-			//LOG_INFO("%lf : %lf, %lf | %lf, %lf\n", f, p44.x, p44.y, p4.x, p4.y);
-
-			return p4;
-		}
-		else
-		{
-			return MainPolygon(p1, p2, p3, t1, t2, t3, t4, predictLength);
-		}
+        p4 = MainCatmull(p1, p2, p3, t1, t2, t3, t4, predictLength);
+        return p4;
 	}
 
 	// some error occurred

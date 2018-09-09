@@ -333,49 +333,54 @@
                 </StackPanel>
               </GroupBox>
 
-
-
-
               <!-- Smoothing -->
-              <GroupBox Name="groupFilter" Header="Predict Filter" VerticalAlignment="Bottom" Margin="5,0,0,0" HorizontalAlignment="Left"
+              <GroupBox Name="groupFilter" Header="Smoothing Filter" VerticalAlignment="Bottom" Margin="5,0,0,0" HorizontalAlignment="Left"
                         >
                 <GroupBox.ToolTip>
                   <StackPanel>
                     <TextBlock FontWeight="Bold">
-                    asdfasdfasdf
+                    Cursor position smoothing filter
                     </TextBlock>
                     <TextBlock>
-                      - asdfasdf
+                      - Smoothing filter adds latency to the input, so don't enable it if you want to have the lowest possible input lag.
                       <LineBreak/>
-                      - asdfasdf
+                      - On Wacom tablets you can use latency value between 15 and 25 to have a similar smoothing as in the Wacom drivers.
+                      <LineBreak/>
+                      - You can test out different filter values, but recommended maximum for osu! is around 50 milliseconds.
+                      <LineBreak/>
+                      - Filter latency value lower than 4 milliseconds isn't recommended. It is just better to disable the smoothing filter.
+                      <LineBreak/>
+                      - You don't have to change the filter rate, but you can use the highest rate your computer can run without performance problems.
                     </TextBlock>
                   </StackPanel>
                 </GroupBox.ToolTip>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
 
-                    <!--Predict Length-->
-                  <GroupBox Header="Length" Height="50" Width="80" Margin="0,0,0,0">
+                  <!-- Filter Latency -->
+                  <GroupBox Header="Latency" Height="50" Width="80" Margin="0,0,0,0">
                     <Grid>
-                      <TextBox Name="textPredictLength" Padding="4,0,0,0"
+                      <TextBox Name="textSmoothingLatency" Padding="4,0,0,0"
                                HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
                                TextChanged="TextChanged">0</TextBox>
                       <Label Width="30" HorizontalAlignment="Right">ms</Label>
                     </Grid>
                   </GroupBox>
 
-                    <!--Algorithm-->
+                  <!-- Filter Rate -->
                   <GroupBox Header="Rate" VerticalAlignment="Top" HorizontalAlignment="Left" Width="85" Height="50">
-                    <ComboBox Name="comboBoxAlgorithm" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center" Height="28" VerticalAlignment="Top">
-                      <!-- <ComboBoxItem>Off</ComboBoxItem> -->
-                      <ComboBoxItem Selector.IsSelected="True">Linear</ComboBoxItem>
-                      <ComboBoxItem>Polygon</ComboBoxItem>
-                      <ComboBoxItem>Catmull-Rom</ComboBoxItem>
+                    <ComboBox Name="comboBoxSmoothingRate" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center" HorizontalAlignment="Left" Width="73">
+
+
+                      <ComboBoxItem>500 Hz</ComboBoxItem>
+                      <ComboBoxItem>333 Hz</ComboBoxItem>
+                      <ComboBoxItem Selector.IsSelected="True">250 Hz</ComboBoxItem>
+                      <ComboBoxItem>125 Hz</ComboBoxItem>
                     </ComboBox>
                   </GroupBox>
 
-                   <!--Filter enabled--> 
-                  <CheckBox Name="checkBoxPredict"
+                  <!-- Filter enabled -->
+                  <CheckBox Name="checkBoxSmoothing"
                             VerticalAlignment="Center"
                             Margin="5"
                             Checked="CheckboxChanged" Unchecked="CheckboxChanged">
@@ -383,10 +388,6 @@
                   </CheckBox>
                 </StackPanel>
               </GroupBox>
-
-
-
-
             </StackPanel>
 
 
@@ -435,6 +436,63 @@
                 </StackPanel>
               </GroupBox>
 
+                              <!-- Predict -->
+              <GroupBox Name="groupPredict" Header="Prediction" VerticalAlignment="Bottom" Margin="5,0,0,0" HorizontalAlignment="Left">
+                <GroupBox.ToolTip>
+                  <StackPanel>
+                    <TextBlock FontWeight="Bold">
+                    asdfasdfasdf
+                    </TextBlock>
+                    <TextBlock>
+                      - asdfasdf
+                      <LineBreak/>
+                      - asdfasdf
+                    </TextBlock>
+                  </StackPanel>
+                </GroupBox.ToolTip>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+
+                    <!--Algorithm-->
+                  <GroupBox Header="Algorithm" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" Height="50">
+                    <ComboBox Name="comboBoxAlgorithm" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center" Height="28" VerticalAlignment="Top">
+                      <!-- <ComboBoxItem>Off</ComboBoxItem> -->
+                      <ComboBoxItem Selector.IsSelected="True">Linear</ComboBoxItem>
+                      <ComboBoxItem>Polygon</ComboBoxItem>
+                      <ComboBoxItem>Catmull-Rom</ComboBoxItem>
+                    </ComboBox>
+                  </GroupBox>
+
+                    <!--Predict Length-->
+                  <GroupBox Header="Length" Height="50" Width="80" Margin="0,0,0,0">
+                    <Grid>
+                      <TextBox Name="textPredictLength" Padding="4,0,0,0"
+                               HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                               TextChanged="TextChanged">0</TextBox>
+                      <Label Width="30" HorizontalAlignment="Right">ms</Label>
+                    </Grid>
+                  </GroupBox>
+
+                 <!-- Filter Rate -->
+                  <GroupBox Header="Interval" VerticalAlignment="Top" HorizontalAlignment="Left" Width="85" Height="50">
+                    <ComboBox Name="comboBoxPredictInterval" SelectionChanged="ItemSelectionChanged" VerticalContentAlignment="Center">
+                      <ComboBoxItem>1000 Hz</ComboBoxItem>
+                      <ComboBoxItem>500 Hz</ComboBoxItem>
+                      <ComboBoxItem>333 Hz</ComboBoxItem>
+                      <ComboBoxItem>250 Hz</ComboBoxItem>
+                      <ComboBoxItem>Device</ComboBoxItem>
+                    </ComboBox>
+                  </GroupBox>
+
+                   <!--Filter enabled--> 
+                  <CheckBox Name="checkBoxPredict"
+                            VerticalAlignment="Center"
+                            Margin="5"
+                            Checked="CheckboxChanged" Unchecked="CheckboxChanged">
+                    Enabled
+                  </CheckBox>
+                </StackPanel>
+              </GroupBox>
 
             </StackPanel>
 
